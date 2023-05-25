@@ -1,0 +1,32 @@
+@charset "UTF-8";
+
+.my-scroll{
+	/* overflow : 내가 지정한 영역을 넘었을 경우 */
+	max-height: 15rem;
+	/*overflow-y: scroll;*/
+	overflow-y: auto; /* auto : 범위가 벗어날 경우에만 스크롤 생성 */
+}
+
+.my-scroll::-webkit-scrollbar {
+	width: 8px; /* 스크롤바의 너비 */
+}
+
+.my-scroll::-webkit-scrollbar-thumb {
+	height: 30%; /* 스크롤바의 길이 */
+	background: #b7b7b7; /* 스크롤바의 색상 */
+	border-radius: 10px;
+}
+
+.my-scroll::-webkit-scrollbar-track {
+	background: #84848447; /*스크롤바 뒷 배경 색상*/
+}
+
+.order-info-label{
+	color: red;
+	font-size: 0.9rem;
+	align-self: flex-end;
+}
+
+.modal-tr{
+	cursor: pointer;
+}

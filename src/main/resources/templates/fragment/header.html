@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<th:block th:fragment="headerFragment">
+	<div class="row">
+		<!-- text-end 클래스 : 우측정렬 -->
+		<div class="col text-end">
+			<th:block sec:authorize="isAnonymous()">
+				<span data-bs-toggle="modal" data-bs-target="#joinModal" style="cursor: pointer;">JOIN</span> | 
+				<span data-bs-toggle="modal" data-bs-target="#loginModal" style="cursor: pointer;">LOGIN</span>			
+			</th:block>
+			<th:block sec:authorize="isAuthenticated()">
+				[[${#authentication.name}]]님 반갑습니다. | 
+				<span onclick="location.href='/cart/cartList'" style="cursor: pointer;">내정보확인</span> | 
+				<span onclick="location.href='/logout';" style="cursor: pointer;">LOGOUT</span>			
+			</th:block>
+			
+		</div>
+	</div>
+	<div class="row text-center">
+		<div class="col">
+			<span class="header-title" style="font-family: 'SANJUGotgam'; font-size: 40px;">
+				<img alt="sinamoroll" src="/img/sinamoroll.png" width="100px;">
+				BOOK SHOP
+				<img alt="sinamoroll" src="/img/sinamoroll.png" width="100px;">
+			</span>
+		</div>
+	</div>
+	<div class="row text-start">
+		<div class="col">
+			<nav class="navbar navbar-expand-lg bg-body-tertiary">
+				<div class="container-fluid">
+					<div class="collapse navbar-collapse" id="navbarNav">
+						<ul class="navbar-nav">
+							<!-- 로그인하지 않았을 때 -->
+							<th:block sec:authorize="isAnonymous()">
+								<li class="nav-item">
+										<a class="nav-link" th:href="@{/item/itemList}">전체</a>
+									</li>
+								<th:block th:each="cate : ${cateList}">
+									<li class="nav-item">
+										<a class="nav-link" th:href="@{/item/itemList(cateCode=${cate.cateCode})}">[[${cate.cateName}]]</a>
+									</li>								
+								</th:block>
+							</th:block>
+								<!-- 일반 회원이 로그인했을 경우 -->
+								<th:block sec:authorize="hasRole('ROLE_USER')">
+									<a class="nav-link" th:href="@{/item/itemList}">전체</a>
+									<th:block th:each="cate : ${cateList}">
+										<li class="nav-item">
+											<a class="nav-link" th:href="@{/item/itemList(cateCode=${cate.cateCode})}">[[${cate.cateName}]]</a>
+										</li>								
+									</th:block>
+								</th:block>
+								<!-- 관리자가 로그인했을 경우 -->
+								<th:block sec:authorize="hasRole('ROLE_ADMIN')">
+									<th:block th:each="menu : ${menuList}">
+										<li class="nav-item">
+											<a class="nav-link" th:href="@{'/admin' + ${menu.menuUrl}(menuCode=${menu.menuCode})}" >[[${menu.menuName}]]</a>
+										</li>								
+									</th:block>
+								</th:block>
+						</ul>
+						
+					</div>
+				</div>
+			</nav>
+		</div>
+	</div>
+	<!-- 비밀번호찾기 모달 -->
+	<div class="modal fade" id="exampleModal" tabindex="-1"
+		aria-labelledby="exampleModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="exampleModalLabel">Modal
+						title</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body">...</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-bs-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary">Save changes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- login modal -->
+	<!-- 눈에 안 보이는 코드 -->
+	<div class="modal fade" id="loginModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-body">
+					<form id="loginForm" method="post">
+						<div class="row mb-3" style="text-align: center;">
+							<div class="col">
+								<img alt="sinamoroll" src="/img/sinamoroll.png" width="150px;">
+							</div>
+						</div>
+						<div class="row mb-3">
+							<div class="col">
+								<input type="text" class="form-control" placeholder="아이디" name="memId" id="memId">
+							</div>
+						</div>
+						<div class="row mb-3">
+							<div class="col" id="loginErrorDiv">
+								<input type="password" class="form-control" placeholder="비밀번호" name="memPw" id="memPw">			
+								<div id="errorDiv" style="color: red; font-size: 0.9rem; ">
+									<!-- 로그인 실패시 에러메시지 출력 공간(js에서 구현) -->
+								</div>			
+							</div>
+						</div>
+						<div class="row mb-3">
+							<div class="col d-grid">
+								<input type="button" class="btn btn-primary" value="로그인" onclick="login();">						
+							</div>
+						</div>
+						<div class="row">
+							<div class="col">
+								<span style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#findPwModal">
+									비밀번호 찾기
+								</span>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- join modal -->
+	<div class="modal fade" id="joinModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-body">
+					<form class="row g-3" id="joinForm" th:action="@{/member/join}" method="post">
+						<div class="col-12" style="text-align: center;">
+							<img alt="sinamoroll" src="/img/sinamoroll.png" width="150px;">
+						</div>
+						<div class="col-9">
+							<label for="memId" class="form-label">아이디</label> 
+							<!-- 아이디 중복체크 후 키보드로 내용을 변경했을 때 disabled 속성을 주는 함수 실행 -->
+							<input type="text" class="form-control" id="memId" name="memId" onkeyup="setDisabled();">
+						</div>
+						<div class="col-3 d-grid">
+							<label for="check_id" class="form-label">&nbsp;</label> 
+							<input type="button" value="중복검사" class="btn btn-primary" id="check_id" onclick="isDuplicateMemId();">
+						</div>
+						<!-- <div class="my-invalid" style="margin-top: 0px;">
+							잘못된 아이디
+						</div> -->
+						<div class="col-12">
+							<label for="memPw" class="form-label">비밀번호</label> 
+							<input type="password" class="form-control" id="memPw" name="memPw" onkeyup="checkPw();">
+						</div>
+						<div class="col-12">
+							<label for="checkPw" class="form-label">비밀번호 확인</label> 
+							<input type="password" class="form-control" id="checkPw" onkeyup="checkPw();">
+						</div>
+						<div class="col-6">
+							<label for="memName" class="form-label">이름</label> 
+							<input type="text" class="form-control" id="memName" name="memName"/>
+						</div>
+						<div class="col-3">
+							<label for="inputPassword4" class="form-label">성별</label>
+							<div class="row">
+								<div class="col-2"></div>
+								<div class="form-check col-4">
+									<input type="radio" class="form-check-input" value="M" name="gender" checked>남
+								</div>
+								<div class="form-check col-4">
+									<input type="radio" class="form-check-input" value="F"  name="gender">여
+								</div>
+								<div class="2"></div>
+							</div>
+						</div>
+						<div class="col-4">
+							<label for="tell_1" class="form-label">전화번호</label> 
+							<select class="form-select" id="tell_1" name="memTells">
+								<option value="010">010</option>
+								<option value="011">011</option>
+								<option value="012">012</option>
+							</select>
+						</div>
+						<div class="col-4">
+							<label for="tell_2" class="form-label">&nbsp;</label> 
+							<input type="text" class="form-control" id="tell_2" placeholder="1234" name="memTells">
+						</div>
+						<div class="col-4">
+							<label for="tell_3" class="form-label">&nbsp;</label> 
+							<input type="text" class="form-control" id="tell_3" placeholder="5678" name="memTells">
+						</div>
+						<div class="col-9">
+							<label for="memAddr" class="form-label">주소</label> 
+							<input type="text" class="form-control" id="memAddr" name="memAddr" placeholder="울산광역시 남구 삼산로29번길 19-1" readonly  onclick="searchAddr();">
+						</div>
+						<div class="col-3 d-grid">
+							<label for="search_btn" class="form-label">&nbsp;</label> 
+							<input type="button" value="검색" class="btn btn-primary" id="search_btn" onclick="searchAddr();">
+						</div>
+						<div class="col-12">
+							<input type="text" class="form-control" name="addrDetail" placeholder="2층">
+						</div>
+										
+						<div class="col-12 d-grid">
+							<button id="joinBtn" onclick="join();" type="button" class="btn btn-primary" disabled>회원가입</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- 비밀번호찾기 모달 -->
+	<div class="modal fade" id="findPwModal" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-body">
+					<form id="findPwForm" method="post">
+						<div class="row mb-3" style="text-align: center;">
+							<div class="col">
+								<img alt="sinamoroll" src="/img/sinamoroll.png" width="150px;">
+							</div>
+						</div>
+						<div class="row mb-3">
+							<div class="col text-center">
+								회원가입시 입력한 이메일 주소로<br>임시 비밀번호가 발급됩니다.
+							</div>
+						</div>
+						<div class="row mb-3">
+							<div class="col">
+								<input type="text" class="form-control" placeholder="아이디를 입력하세요" name="memId" id="findPwMemId">
+							</div>
+						</div>
+						<div class="row mb-3">
+							<div class="col-12" id="findPwErrorDiv">
+								<input type="text" class="form-control" placeholder="이름을 입력하세요" name="memName" id="findPwMemName">			
+								<div id="errorDiv" style="color: red; font-size: 0.9rem; ">
+									<!-- 비밀번호찾기 실패시 에러메시지 출력 공간(js에서 구현) -->
+								</div>			
+							</div>
+						</div>
+						<div class="row mb-3">
+							<div class="col d-grid">
+								<button type="button" class="btn btn-primary" onclick="findPw(this);">
+									<span>임시 비밀번호 발급</span>
+								</button>						
+							</div>
+							
+						</div>
+						
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+
+</th:block>
+
+</html>

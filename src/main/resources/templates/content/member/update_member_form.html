@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragment/user_layout_detail}">
+
+<!-- 연결해야할 외부 css 파일 -->
+<th:block layout:fragment="content_css">
+   	<!-- <link rel="stylesheet" href="/"> -->
+</th:block>
+
+<th:block layout:fragment="content">
+	<div class="row mt-3">
+		<div class="col">
+			<div class="row mb-3">
+				<div class="col sub-title">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+						fill="currentColor" class="bi bi-caret-right-fill"
+						viewBox="0 0 16 16">
+						<path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
+					</svg>
+					개인정보 수정
+				</div>
+			</div>
+			<form action="/member/update" method="post">
+				<div class="row">
+					<div class="col-12">
+						<table class="table updateMemberTable align-middle">
+							<colgroup>
+								<col width="20%;">
+								<col width="*">
+							</colgroup>
+							<tr>
+								<td>아이디</td>
+								<td>[[${member.memId}]]</td>
+							</tr>
+							<tr>
+								<td>기존 비밀번호</td>
+								<td>
+									<div class="row">
+										<div class="col-5" style="padding-right: 0;">
+											<input type="password" id="inputPw" class="form-control">
+										</div>
+										<div class="col-3 d-grid">
+											<input type="button" class="btn btn-primary" th:onclick="checkPw(this);" onchange="setDisaled();" value="비밀번호 확인">
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>새 비밀번호</td>
+								<td>
+									<div class="col-5">
+										<input type="password" name="memPw" class="form-control memPw" id="memPwOrigin" disabled onkeyup="isSamePw();"
+										 placeholder="문자 + 숫자의 6~12자리의 글자">
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>새 비밀번호 확인</td>
+								<td>
+									<div class="col-5">
+										<input type="password" class="form-control memPw" id="confirmMemPw" disabled onkeyup="isSamePw();" 
+										placeholder="문자 + 숫자의 6~12자리의 글자">
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>이름</td>
+								<td>
+									<div class="col-5">
+										<input type="text" name="memName" class="form-control" th:value="${member.memName}">
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>성별</td>
+								<td>
+									<div class="form-check">
+										<input class="form-check-input" type="radio" name="gender" id="gender_M" value="option1" th:checked="${member.gender == 'M'}"> 
+										<label class="form-check-label" for="gender_M"> 남 </label>
+									</div>
+									<div class="form-check">
+										<input class="form-check-input" type="radio" name="gender" id="gender_F" value="option2" th:checked="${member.gender == 'Y'}">
+										<label class="form-check-label" for="gender_F"> 여</label>
+									</div></td>
+							</tr>
+							<tr>
+								<td>전화번호</td>
+								<td>
+									<div class="col-5">
+										<input type="text" class="form-control" name="memTell" th:value="${member.memTell}">
+									</div>
+								</td>
+							</tr>
+							<tr class="align-middle">
+								<td>주소</td>
+								<td class="align-middle">
+									<div class="row align-middle">
+										<div class="col-9">
+											<label for="memAddr" class="form-label"></label> 
+											<input type="text" class="form-control" id="memAddr" name="memAddr" th:value="${member.memAddr}"
+												 readonly onclick="searchAddr();">
+										</div>
+										<div class="col-3 d-grid">
+											<label for="search_btn" class="form-label">&nbsp;</label> 
+											<input type="button" value="검색" class="btn btn-primary" id="search_btn" onclick="searchAddr();">
+										</div>
+										<div class="col-12">
+											<input type="text" class="form-control" name="addrDetail" th:value="${member.addrDetail}">
+										</div>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>이메일</td>
+								<td>
+									<div class="col-5">
+										<input type="text" class="form-control" name="memEmail" th:value="${member.memEmail}">
+									</div>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<div class="row mb-4">
+					<div class="offset-4 col-4 d-grid" style="height: 50px;">
+						<button type="submit" class="btn btn-primary" id="updateBtn">개인정보 수정</button>
+					</div>
+				</div>
+			</form>
+			
+		</div>
+	</div>
+</th:block>
+
+<!-- 연결해야할 외부 js 파일 -->
+<th:block layout:fragment="content_js">
+	<script type="text/javascript" src="/js/content/member/update_member_form.js"></script>
+</th:block>
+
+</html>

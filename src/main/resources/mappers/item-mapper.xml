@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 해당 파일에 모든 쿼리문을 작성 -->
+<mapper namespace="itemMapper">
+	<resultMap type="com.study.shop.item.vo.CategoryVO" id="category">
+		<id column="CATE_CODE" 			property="cateCode" />
+		<result column="CATE_NAME" 		property="cateName"/>
+		<result column="ORDER_NUM" 		property="orderNum"/>
+		<result column="IS_USE" 		property="isUse"/>
+	</resultMap>
+	<resultMap type="com.study.shop.item.vo.ImgVO" id="img">
+		<id column="IMG_CODE" 				property="imgCode"/>
+		<result column="ORIGIN_FILE_NAME" 	property="originFileName"/>
+		<result column="ATTACHED_FILE_NAME" property="attachedFileName"/>
+		<result column="IS_MAIN" 			property="isMain"/>
+		<result column="ITEM_CODE" 			property="itemCode"/>
+	</resultMap>
+	<resultMap type="com.study.shop.item.vo.ItemVO" id="item">
+		<id column="ITEM_CODE" 			property="itemCode"/>
+		<result column="CATE_CODE" 		property="cateCode"/>
+		<result column="ITEM_NAME" 		property="itemName"/>
+		<result column="ITEM_PRICE" 	property="itemPrice"/>
+		<result column="ITEM_STOCK"		property="itemStock"/>
+		<result column="ITEM_INTRO" 	property="itemIntro"/>
+		<result column="ITEM_STATUS" 	property="itemStatus"/>
+		<result column="ITEM_STATUS_STR" 	property="itemStatusStr"/>
+		<!-- association : 객체 하나 / collection : 여러개(list) --> 
+		<association property="categoryVO" resultMap="category"></association>
+		<collection property="imgList" resultMap="img"></collection>
+	</resultMap>
+	
+	<select id="getCateListInUse" resultMap="category">
+ 		SELECT CATE_CODE, CATE_NAME
+		FROM ITEM_CATEGORY
+		WHERE IS_USE = 'Y'
+		ORDER BY ORDER_NUM	
+	</select>
+	<select id="getItemListForUser" resultMap="item">
+		SELECT
+			ITEM.ITEM_CODE 
+			, ITEM_NAME
+			, ITEM_PRICE
+			, ITEM_INTRO
+			, ATTACHED_FILE_NAME
+		FROM SHOP_ITEM ITEM, ITEM_IMG IMG
+		WHERE ITEM.ITEM_CODE = IMG.ITEM_CODE 
+		AND IS_MAIN = 'Y'
+		<if test="cateCode != null">
+			AND CATE_CODE = #{cateCode}
+		</if>
+	</select>
+	<select id="getItemDetail" resultMap="item">
+		SELECT ITEM.ITEM_CODE
+		    , ITEM_NAME
+		    , ITEM_INTRO
+		    , ITEM_PRICE
+		    , ITEM_STOCK
+		    , ITEM_STATUS
+		    , ATTACHED_FILE_NAME
+		    , ORIGIN_FILE_NAME
+		    , IS_MAIN
+		FROM SHOP_ITEM ITEM, ITEM_IMG IMG
+		WHERE ITEM.ITEM_CODE = IMG.ITEM_CODE
+		AND ITEM.ITEM_CODE = #{itemCode}
+	</select>
+	
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

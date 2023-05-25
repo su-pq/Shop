@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+   xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+   layout:decorate="~{fragment/user_layout}">
+
+<!-- 연결해야할 외부 css 파일 -->
+<th:block layout:fragment="content_css">
+   	<!-- <link rel="stylesheet" href="/"> -->
+</th:block>
+
+<th:block layout:fragment="content">
+   
+   <div class="row">
+		<th:block th:each="item : ${itemList}">
+			<div class="col-3 card"  style="margin-bottom: 2rem;">
+				<div>
+					<a th:href="@{/item/detail(itemCode=${item.itemCode})}">
+						<img th:src="${'/upload/'+item.imgList[0].attachedFileName}" class="card-img-top" alt="..." height="300px;">
+					</a>			
+				</div>
+				<div class="card-body">
+					<h5 class="card-title">[[${item.itemName}]]</h5>
+					<!-- 가격을 화폐 단위로 출력하는 thymleaf 기능 -->
+					<h6 class="card-title">[[${#numbers.formatCurrency(item.itemPrice)}]]</h6>
+					<h6 class="card-title">[[${item.itemIntro}]]</h6>
+					<!-- <p class="card-text">[[${item.itemPrice}]]원</p>
+					<p class="card-text">[[${item.itemIntro}]]</p> -->
+					<!-- <a th:href="@{/item/detail(itemCode=${item.itemCode})}" class="btn btn-primary">상세보기</a> -->
+				</div>
+			</div>
+		</th:block>
+	</div>
+</th:block>
+
+<!-- 연결해야할 외부 js 파일 -->
+<th:block layout:fragment="content_js">
+	<script type="text/javascript" src="/js/content/item/item_list.js"></script>
+</th:block>
+
+</html>

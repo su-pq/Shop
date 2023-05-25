@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+   xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+   layout:decorate="~{fragment/admin_layout}">
+
+<!-- 연결해야할 외부 css 파일 -->
+<th:block layout:fragment="content_css">
+   	<!-- <link rel="stylesheet" href="/"> -->
+</th:block>
+
+<th:block layout:fragment="content">
+	<!-- multipart/formdatd : 여러개의 첨부파일을 가져가려면 필수 -->
+	<form class="row gy-2 gx-3 align-items-center" th:action="@{/admin/regItemProcess}" method="post" th:object="${itemVO}" enctype="multipart/form-data">
+		<div class="col-12" style="font-size: 30px; color: #6bc8df; font-style: italic;">상품등록</div>
+		<div class="col-4">
+			<label for="category">카테고리</label>
+			<select class="form-select" id="category" name="cateCode">
+				<th:block th:each="cate : ${cateList}">
+					<option th:value="${cate.cateCode}">[[${cate.cateName}]]</option>				
+				</th:block>
+			</select>
+		</div>
+		<div class="col-8">
+			<label for="itemName" class="form-label">상품명</label>
+			<!-- 아이디 중복체크 후 키보드로 내용을 변경했을 때 disabled 속성을 주는 함수 실행 -->
+			<input type="text" class="form-control" id="itemName" name="itemName">
+		</div>
+		<div class="col-6">
+			<label for="itemPrice" class="form-label">상품가격</label>
+			<input type="text" class="form-control" id="itemPrice" name="itemPrice">
+		</div>
+		<div class="col-6">
+			<label for="itemStock" class="form-label">재고</label>
+			<input type="number" class="form-control" id="itemStock" name="itemStock" value="10" min="10" max="100">
+		</div>
+		<div class="col-12">
+			<label for="intro" class="form-label">상품소개</label>
+  			<textarea class="form-control" id="intro" rows="5" name="itemIntro"></textarea>
+		</div>
+		<div class="col-6">
+			<label for="mainImg" class="form-label">메인 이미지</label>
+  			<input class="form-control" type="file" id="mainImg" name="mainImg">
+		</div>
+		<div class="col-6">
+			<!-- multiple : 파일 여러개 선택 가능. form태그에 필수로 enctype="multipart/form-data" 속성 추가해야함. -->
+			<label for="subImg" class="form-label">서브 이미지</label>
+  			<input class="form-control" type="file" id="subImg" name="subImg" multiple>
+		</div>
+		<div class="col-12">
+			<input class="form-check-input" type="radio" name="itemStatus" value="1" checked>판매중
+			<input class="form-check-input" type="radio" name="itemStatus" value="2">준비중
+			<input class="form-check-input" type="radio" name="itemStatus" value="3">매진
+		</div>
+		<div class="col-12">
+			<button id="regItem" type="submit" class="btn btn-primary">등 록</button>
+		</div>
+
+
+
+
+	</form>
+</th:block>
+
+<!-- 연결해야할 외부 js 파일 -->
+<th:block layout:fragment="content_js">
+	<!-- <script type="text/javascript" src="/"></script> -->
+</th:block>
+
+</html>

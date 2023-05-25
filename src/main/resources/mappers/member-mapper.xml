@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 해당 파일에 모든 쿼리문을 작성 -->
+<mapper namespace="memberMapper">
+	<resultMap type="com.study.shop.member.vo.MemberVO" id="member">
+		<id column="MEM_ID" 			property="memId"/>
+		<result column="MEM_PW" 		property="memPw"/>
+		<result column="MEM_NAME" 		property="memName"/>
+		<result column="MEM_EMAIL" 		property="memEmail"/>
+		<result column="GENDER" 		property="gender"/>
+		<result column="MEM_TELL" 		property="memTell"/>
+		<result column="MEM_ADDR" 		property="memAddr"/>
+		<result column="ADDR_DETAIL" 	property="addrDetail"/>
+		<result column="MEM_ROLE" 		property="memRole"/>
+		<result column="MEM_STATUS" 	property="memStatus"/>
+		<result column="JOIN_DATE" 		property="joinDate"/>
+	</resultMap>
+
+	<select id="isDuplicateMemId" resultType="int">
+		SELECT COUNT(MEM_ID) 
+		FROM SHOP_MEMBER
+		WHERE MEM_ID=#{memId}
+	</select>
+	<!-- #{} : 값에 자동으로 ''가 붙어 나온다. -->
+	<!-- ${} : ''가 붙어 나오지 않는다. -->
+	<insert id="join">
+		INSERT INTO SHOP_MEMBER (
+		    MEM_ID
+		    , MEM_PW
+		    , MEM_NAME
+		    , GENDER
+		    , MEM_TELL
+		    , MEM_ADDR
+		    , ADDR_DETAIL
+		) VALUES(
+		    #{memId}
+		    , #{memPw}
+		    , #{memName}
+		    , #{gender}
+		    , REPLACE(
+		    <foreach collection="memTells" item="tell" open="'" separator="-" close="'">
+		    	${tell}
+		    </foreach>, ' ', '')
+		    , #{memAddr}
+		    , #{addrDetail}
+		)
+	</insert>
+	<select id="login" resultMap="member">
+		SELECT MEM_ID
+			, MEM_PW
+			, MEM_ROLE
+		FROM SHOP_MEMBER
+		WHERE MEM_ID = #{memId}
+		AND MEM_STATUS != 3
+	</select>
+	<insert id="addcart">
+		INSERT INTO SHOP_CART (
+		    CART_CODE
+		    , ITEM_CODE
+		    , MEM_ID
+		    , CART_CNT
+		) VALUES (
+		    (SELECT 'CART_'||LPAD(NVL(MAX(TO_NUMBER(SUBSTR(CART_CODE, 6))), 0)+1, 3, '0') FROM SHOP_CART)
+		    , #{itemCode}
+		    , #{memId}
+		    , #{cartCnt}
+		)
+	</insert>
+	
+	<!-- 비밀번호 찾기 -->
+	<select id="getMemEmail" resultType="String">
+		SELECT MEM_EMAIL
+		FROM SHOP_MEMBER
+		WHERE MEM_ID = #{memId}
+		AND MEM_NAME = #{memName}
+	</select>
+	
+	<!-- 임시 비밀번호로 변경 -->
+	<update id="updateMemPw">
+		UPDATE SHOP_MEMBER
+		SET MEM_PW = #{memPw}
+		WHERE MEM_ID = #{memId}
+	</update>
+	
+	<!-- 내정보확인 > 개인정보 수정 - 기존 정보 가져오기 -->
+	<select id="getMemberInfo" resultMap="member">
+		SELECT MEM_ID
+			, MEM_NAME
+			, GENDER
+			, MEM_TELL
+			, MEM_ADDR
+			, ADDR_DETAIL
+			, MEM_EMAIL
+		FROM SHOP_MEMBER
+		WHERE MEM_ID = #{memId}
+	</select>
+	<!-- 개인정보 수정 - 기존 비밀번호 확인 -->
+	<select id="getMemPw" resultType="String">
+		SELECT MEM_PW
+		FROM SHOP_MEMBER
+		WHERE MEM_ID = #{memId}
+	</select>
+	<update id="updateMemberInfo">
+		UPDATE SHOP_MEMBER
+		SET 
+		<if test="memPw != null">		
+			MEM_PW = #{memPw}
+		</if>
+			MEM_NAME = #{memName}
+			GENDER = #{gender}
+			MEM_TELL = #{memTell}
+			MEM_ADDR = #{memAddr}
+			ADDR_DETAIL = #{addrDetail}
+			MEM_EMAIL = #{memEmail}
+		WHERE MEM_ID = #{memId}
+	</update>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

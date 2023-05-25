@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<th:block th:fragment="userSideFragment">
+	<div class="row">
+		<div class="col">
+			<div class="list-group">
+				<a th:href="@{/cart/cartList}" class="list-group-item list-group-item-action" id="cartList">장바구니 목록</a>
+				<a th:href="@{/buy/buyList}" class="list-group-item list-group-item-action" id="buyList">구매 내역</a>
+				<a th:href="@{/member/updateMemberForm}" class="list-group-item list-group-item-action" id="updateMemberInfo">개인정보 수정</a>
+				
+			</div>
+		</div>
+	</div>
+</th:block>
+</html>
+

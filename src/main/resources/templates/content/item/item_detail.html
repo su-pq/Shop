@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+   xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+   layout:decorate="~{fragment/user_layout}">
+
+<!-- 연결해야할 외부 css 파일 -->
+<th:block layout:fragment="content_css">
+   	<!-- <link rel="stylesheet" href="/"> -->
+   	<style type="text/css">
+   		.itemDetialWrap > div{
+   			margin-top: 15px;
+   		}
+   	</style>
+</th:block>
+
+<th:block layout:fragment="content">
+   <div class="row justify-content-center itemDetialWrap">
+   		<div class="col-8">
+		   <div class="row mb-3">
+		   		<div class="col-5">
+		   			<th:block th:each="img : ${itemVO.imgList}">
+		   				<th:block th:if="${img.isMain == 'Y'}">
+				   			<img th:src="${'/upload/'+img.attachedFileName}" style="text-align:center; height:280px; box-shadow: 2px 2px 5px grey;">
+		   				</th:block>
+		   			</th:block>
+		   		</div>
+		   		<div class="col-7">
+		   			<div class="row mb-3" style="font-size: 30px;font-weight: bold;">
+		   				<label for="" class="col-12 col-form-label">[[${itemVO.itemName}]]</label>
+		   			</div>
+		   			<div class="row mb-3">
+		   				<label for="" class="col-3 col-form-label">상품가격</label>
+		   				<label for="" class="col-9 col-form-label">[[${#numbers.formatCurrency(itemVO.itemPrice)}]]</label>
+		   			</div>
+		   			<div class="row mb-3">
+		   				<label for="" class="col-3 col-form-label">수 량</label>
+		   				<div class="col-9">
+			   				<input type="number" class="form-control col-9" id="cntInput" th:onchange="totalPrice([[${itemVO.itemPrice}]], this);" value="1" min="1" th:max="${itemVO.itemStock}">
+		   				</div>
+		   			</div>
+		   			<div class="row mb-3" id="totalPrice">
+		   				<label for="" class="col-3 col-form-label">총 가격</label>
+		   				<label for="" class="col-9 col-form-label finalPrice">[[${#numbers.formatCurrency(itemVO.itemPrice)}]]</label>
+		   			</div>
+		   			<div class="row mb-3">
+		   				<div class="col d-grid">
+		   					<button type="button" class="btn btn-primary" th:onclick="buy([[${itemVO.itemCode}]]);">
+									바로구매
+							</button>
+		   				</div>
+		   				<div class="col d-grid">
+		   						<button type="button" class="btn btn-primary" 
+		   							th:onclick="regCart([[${itemVO.itemCode}]], [[${#authentication.name}]]);">
+									장바구니
+								</button>
+		   				</div>
+		   			</div>
+		   		</div>
+		   </div>
+			<div class="row mb-3" style="margin-top: 2rem; font-size: 20px; font-weight: bold;" >
+				<ul class="nav nav-tabs">
+					<li class="nav-item"><a class="nav-link active" aria-current="page" href="#">상품정보</a></li>
+					<li class="nav-item"><a class="nav-link disabled" href="#">리뷰</a></li>
+					<li class="nav-item"><a class="nav-link disabled" href="#">배송/반품/교환</a></li>
+				</ul>
+			</div>
+			<div class="row mb-3 pb-3" style="border-bottom: 1px solid #dee2e6;">
+				<div class="col">
+					<div class="row" style="font-size: 20px">[상품 소개]</div>
+					<div class="row">[[${itemVO.itemIntro}]]</div>
+				</div>
+		   </div>
+		   <div class="row mb-3">
+		   		<div class="col-12" style="text-align: center;">
+		   			<th:block th:each="img : ${itemVO.imgList}">
+		   				<th:block th:if="${img.isMain == 'N'}">
+				   			<img th:src="${'/upload/'+img.attachedFileName}" style="width: 100%;"><br>
+		   				</th:block>
+		   			</th:block>
+		   		</div>
+		   </div>
+   		
+   		</div>
+   </div>
+   
+   
+   <!-- 장바구니 모달 -->
+	<div class="modal" tabindex="-1" id="cartModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">카트에 넣기</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"
+						aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<p>상품이 장바구니에 담겼습니다.<br>
+					장바구니로 이동하시겠습니까?</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-bs-dismiss="modal">계속 쇼핑하기</button>
+					<button type="button" class="btn btn-primary" th:onclick="|location.href='@{/cart/cartList}'|">장바구니로 이동</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+
+
+</th:block>
+
+<!-- 연결해야할 외부 js 파일 -->
+<th:block layout:fragment="content_js">
+	<script type="text/javascript" src="/js/content/item/item_detail.js"></script>
+</th:block>
+
+</html>

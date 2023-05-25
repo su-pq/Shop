@@ -1,0 +1,109 @@
+@charset "UTF-8";
+@font-face {
+    font-family: 'Pretendard-Regular';
+    src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'SANJUGotgam';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2112@1.0/SANJUGotgam.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.container{
+    font-family: 'Pretendard-Regular';	
+	margin-top: 30px;
+}
+.container > div:last-child > div:last-child{
+	background-color: white;
+	/* height: 1000px; */
+}
+
+/* @media screen and (max-height: 1000px) {
+  .container > div:last-child > div:last-child{
+    height: 1000px;
+  }
+} */
+
+table .table-head{
+	color: white;
+	background-color: #6bc8df;
+	text-align: center;
+}
+
+.sub-title{
+	font-style: italic;
+	font-weight: bolder;
+	/* font-size: 6px; */
+}
+.my-invalid{
+	margin-top: 0px;
+	font-size: 0.9rem;
+	color: red;
+}
+.btn-primary {
+	--bs-btn-bg: #6bc8df;	
+	/* --bs-btn-color: black;  */
+	--bs-btn-border-color: #6bc8df;
+	--bs-btn-hover-bg: #009FBD;
+	--bs-btn-hover-border-color: #009FBD;
+}
+.btn.disabled, .btn:disabled, fieldset:disabled .btn {
+    background-color: #6bc8df;	
+    border-color: #6bc8df;	
+    opacity: var(--bs-btn-disabled-opacity);
+}
+.form-check-input:checked {
+    background-color: #009FBD;
+    border-color: #009FBD;
+}
+.form-select option:hover {
+  background-color: #009FBD;
+}
+.list-group-item.active{
+	color: var(--bs-list-group-active-color);
+    background-color: #6bc8df;
+    border-color: #6bc8df;
+}
+.table{
+	background-color:white;
+	--bs-table-striped-bg: #fcfbf8;
+}
+.bg-body-tertiary{
+	background-color: rgba(var(252,251,248),var(--bs-bg-opacity))!important;
+}
+body{
+	background-color: #FFFFD0;
+}
+select{
+	background-color: #009FBD;
+}
+.bg-secondary-custom {
+    background-color: #f0f1f2; 
+}
+.colorText{
+	color: #009FBD;
+}
+.pagination {
+	--bs-pagination-color: #009FBD;
+}
+
+.active>.page-link, .page-link.active {
+	background-color: #6bc8df;
+	border-color: #6bc8df;
+}
+.updateMemberTable td:first-child {
+	text-align: center;
+	background-color: #c9ebf3;
+}
+.updateMemberTable{
+	border-top: 2px solid #c8ced5;
+	border-bottom: 2px solid #c8ced5;
+}
+
+
+/* #cateListTbody > tr:last-child > td:first-child {
+	background-color: fuchsia;
+} */

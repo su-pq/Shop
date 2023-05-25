@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<th:block th:fragment="adminSideFragment">
+	<div class="row">
+		<div class="col">
+			<div class="list-group">
+				<th:block th:each="subMenu : ${subMenuList}">
+				  	<a th:href="@{'/admin' + ${subMenu.subMenuUrl}(subMenuCode=${subMenu.subMenuCode}, menuCode=${subMenu.menuCode})}" 
+				  		class="list-group-item list-group-item-action" 
+				  		th:classappend="${subMenu.subMenuCode == subMenuVO.subMenuCode ? 'active' : ''}">
+					  	[[${subMenu.subMenuName}]]
+				  	</a>
+				</th:block>
+			</div>
+		</div>
+	</div>
+</th:block>
+</html>
+

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{fragment/user_layout}">
+
+<!-- 연결해야할 외부 css 파일 -->
+<th:block layout:fragment="content_css">
+   	<!-- <link rel="stylesheet" href="/"> -->
+</th:block>
+
+<th:block layout:fragment="content">
+	<div class="row mb-3 mt-4 justify-content-center">
+		<div class="col-4" style="font-size: 20px; font-weight: bold;">
+			LOGIN
+		</div>
+	</div>
+	<div class="row justify-content-center">
+		<div class="col-4" style="border: 1px solid #d8d8d8;">
+			<form id="loginForm" method="post">
+				
+				<div class="row mb-3" style="text-align: center;">
+					<div class="col">
+						<img alt="sinamoroll" src="/img/sinamoroll.png" width="150px;">
+					</div>
+				</div>
+				<div class="row mb-3">
+					<div class="col">
+						<input type="text" class="form-control" placeholder="아이디"
+							name="memId" id="memId">
+					</div>
+				</div>
+				<div class="row mb-3">
+					<div class="col">
+						<input type="password" class="form-control" placeholder="비밀번호" name="memPw" id="memPw">
+						
+					</div>
+				</div>
+				<div class="row mb-1">
+					<div class="col d-grid">
+						<input type="button" class="btn btn-primary" value="로그인" onclick="login();">
+					</div>
+				</div>
+				<div class="row mb-3">
+					<div class="col d-grid">
+						<input type="button" class="btn btn-primary" value="회원가입" onclick="login();">
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</th:block>
+
+<!-- 연결해야할 외부 js 파일 -->
+<th:block layout:fragment="content_js">
+	<!-- <script type="text/javascript" src="/"></script> -->
+</th:block>
+
+</html>

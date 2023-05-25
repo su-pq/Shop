@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 해당 파일에 모든 쿼리문을 작성 -->
+<mapper namespace="buyMapper">
+	<resultMap type="com.study.shop.buy.vo.BuyVO" id="buy">
+		<id 	column="BUY_CODE" 	property="buyCode"/>
+		<result column="MEM_ID" 	property="memId"/>
+		<result column="BUY_PRICE"	property="buyPrice"/>
+		<result column="BUY_DATE" 	property="buyDate"/>
+		<result column="ETC" 		property="etc"/>
+		<collection property="buyDetailList" resultMap="buyDetail"></collection>
+
+	</resultMap>
+ 	<resultMap type="com.study.shop.buy.vo.BuyDetailVO" id="buyDetail">
+		<id column="BUY_DETAIL_CODE" 		property="buyDetailCode"/>
+		<result column="ITEM_CODE" 			property="itemCode"/>
+		<result column="BUY_CNT" 			property="buyCnt"/>
+		<result column="DETAIL_BUY_PRICE" 	property="detailBuyPrice"/>
+		<result column="BUY_CODE" 			property="buyCode"/>
+		<association property="itemVO" resultMap="itemMapper.item"></association>	
+	</resultMap>
+	
+	
+	<select id="getBuyListForCart" resultMap="cartMapper.cart">
+		SELECT CART_CODE
+		    , CART.ITEM_CODE
+		    , ITEM_NAME
+		    , ITEM_PRICE
+		    , CART_CNT
+		    , ATTACHED_FILE_NAME
+		    , ITEM_PRICE * CART_CNT AS TOTAL_PRICE
+		FROM SHOP_CART CART, SHOP_ITEM ITEM, ITEM_IMG IMG
+		WHERE CART.ITEM_CODE = ITEM.ITEM_CODE
+		AND IMG.ITEM_CODE = ITEM.ITEM_CODE
+		AND IS_MAIN = 'Y'
+		AND CART_CODE IN 
+		<foreach collection="cartCodeList" item="cartCode" open="(" close=")" separator=",">
+			#{cartCode}
+		</foreach>
+	</select>
+	<!-- 주문자 정보 가져오기 -->
+	<select id="getBuyMemberInfo" resultMap="memberMapper.member">
+		SELECT 
+		    MEM_ID
+		    , MEM_NAME
+		    , MEM_TELL
+		    , MEM_ADDR
+		    , ADDR_DETAIL
+		FROM SHOP_MEMBER
+		WHERE MEM_ID = 'user1'
+	</select>
+	<!-- 정답 : 구매쿼리 : shop_buy에 insert -->
+	<select id="getNextBuyCode" resultType="String">
+		SELECT 'BUY_'||LPAD(NVL(MAX(TO_NUMBER(SUBSTR(BUY_CODE, 5))), 0) + 1, 3, '0') FROM SHOP_BUY
+	</select>
+	<insert id="buy">
+		INSERT INTO SHOP_BUY(
+			BUY_CODE
+			, MEM_ID
+			, BUY_PRICE
+		) VALUES(
+			#{buyCode}
+			, #{memId}
+			, #{buyPrice}
+		)
+	</insert>
+	<!-- 정답 : shop -->
+	<insert id="buyDetails">
+		INSERT INTO BUY_DETAIL (
+			BUY_DETAIL_CODE
+			, ITEM_CODE
+			, BUY_CNT
+			, DETAIL_BUY_PRICE
+			, BUY_CODE
+		)
+		<foreach collection="buyDetailList" item="detail" separator="UNION ALL" index="i">
+			SELECT 
+				(SELECT 'BUY_DETAIL_'||LPAD(NVL(MAX(TO_NUMBER(SUBSTR(BUY_DETAIL_CODE, 12))), 0) + 1 + #{i}, 3, '0') FROM BUY_DETAIL)
+				, #{detail.itemCode}
+				, #{detail.buyCnt}
+				, #{detail.detailBuyPrice}
+				, #{detail.buyCode}
+			FROM DUAL
+		</foreach>
+		
+	</insert>
+	<!-- 주문 상태 정보 테이블 insert -->
+	<insert id="regOrderStatus">
+		INSERT INTO ORDER_STATUS (
+			ORDER_NUM
+			, STATUS_CODE
+			, BUY_CODE
+			, MEM_ID
+		) VALUES (
+			(SELECT NVL(MAX(ORDER_NUM), 0) + 1 FROM ORDER_STATUS)
+            , '1'
+            , #{buyCode}
+            , #{memId}
+		)
+	</insert>
+	
+	<!-- 내 코드 : 구매 쿼리 -->
+	<insert id="regBuy">
+		INSERT ALL
+		    INTO SHOP_BUY (
+		        BUY_CODE
+		        , MEM_ID
+		        , BUY_PRICE
+		    ) VALUES(
+		        (SELECT 'BUY_'||LPAD(NVL(MAX(TO_NUMBER(SUBSTR(BUY_CODE, 5))), 0) + 1, 3, '0') FROM SHOP_BUY)
+		        , #{memId}
+		        , #{buyPrice}
+		    )
+		    <foreach collection="buyDetailList" item="detail" index="i">
+		    INTO BUY_DETAIL (
+		        BUY_DETAIL_CODE
+		        , ITEM_CODE
+		        , BUY_CNT
+		        , DETAIL_BUY_PRICE
+		        , BUY_CODE
+		    ) VALUES (
+		        (SELECT 'BUY_DETAIL_CODE'||LPAD(NVL(MAX(TO_NUMBER(SUBSTR(BUY_DETAIL_CODE, 11))), 0) + 1 + #{i}, 3, '0') FROM BUY_DETAIL)
+		        , #{detail.itemCode}
+		        , #{detail.buyCnt}
+		        , #{detail.detailBuyPrice}
+		        , (SELECT 'BUY_'||LPAD(NVL(MAX(TO_NUMBER(SUBSTR(BUY_CODE, 5))), 0) + 1, 3, '0') FROM SHOP_BUY)
+		    )		    
+		    </foreach>
+		SELECT * FROM DUAL
+	</insert>
+	<!-- 구매한 상품 삭제 -->
+	<delete id="deleteBuyCart">
+		DELETE SHOP_CART
+		WHERE ITEM_CODE IN 
+		<foreach collection="buyDetailList" item="detail" open="(" close=")" separator=",">
+			#{detail.itemCode}
+		</foreach>
+		AND MEM_ID = #{memId}
+	</delete>
+	<!-- 구매정보 불러오기 -->
+	<select id="getBuyList" resultMap="buy">
+		SELECT 
+		    BUY.BUY_CODE
+		    , BUY_PRICE
+		    , TO_CHAR(BUY_DATE, 'YYYY-MM-DD HH24:MI') BUY_DATE
+		    , BUY_DETAIL_CODE
+		    , ITEM.ITEM_CODE
+		    , ITEM_NAME
+		    , ITEM_PRICE
+		    , BUY_CNT
+		    , DETAIL_BUY_PRICE
+		    , ATTACHED_FILE_NAME
+		    , (SELECT COUNT(BUY_DETAIL_CODE)
+		    FROM BUY_DETAIL
+		    WHERE BUY_CODE = BUY.BUY_CODE) ETC
+		FROM SHOP_BUY BUY, BUY_DETAIL DETAIL, SHOP_ITEM ITEM, ITEM_IMG IMG
+		WHERE BUY.BUY_CODE = DETAIL.BUY_CODE
+		AND ITEM.ITEM_CODE = DETAIL.ITEM_CODE
+		AND ITEM.ITEM_CODE = IMG.ITEM_CODE
+		AND MEM_ID = #{memId}
+		AND IS_MAIN = 'Y'
+		<if test="month != null and month != 0">
+			 AND TO_CHAR(BUY_DATE, 'YYYYMMDD') &gt;= TO_CHAR(ADD_MONTHS(SYSDATE, #{month}), 'YYYYMMDD') 
+		</if>
+		<if test="fromDate != null">
+			AND TO_CHAR(BUY_DATE, 'YYYY-MM-DD') &gt;= #{fromDate}
+			AND TO_CHAR(BUY_DATE, 'YYYY-MM-DD') &lt;= #{toDate}
+		</if>
+	</select>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
