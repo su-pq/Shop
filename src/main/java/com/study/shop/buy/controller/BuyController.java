@@ -48,7 +48,7 @@ public class BuyController {
 		//상세정보 데이터 세팅
 		ObjectMapper mapper = new ObjectMapper();
 		BuyDetailVO[] arr = mapper.convertValue(mapData.get("detail_info_arr"), BuyDetailVO[].class);
-		List<BuyDetailVO> buyDetailList = Arrays.asList(arr);		
+		List<BuyDetailVO> buyDetailList = Arrays.asList(arr);
 		
 		buyVO.setBuyDetailList(buyDetailList);
 		
